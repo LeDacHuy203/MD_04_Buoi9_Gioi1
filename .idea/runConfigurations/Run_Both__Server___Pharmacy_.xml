@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Both (Server + Pharmacy)" type="CompoundRunConfigurationType">
+    <toRun name="ConfigServerApplication" type="SpringBootApplicationConfigurationType" />
+    <toRun name="PharmacyServiceApplication" type="SpringBootApplicationConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>

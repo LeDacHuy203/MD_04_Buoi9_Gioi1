@@ -1,0 +1,44 @@
+### ========================================================
+### BÀI TẬP 1: TEST CONFIG SERVER LẤY DỮ LIỆU TỪ GIT
+### ========================================================
+GET http://localhost:8888/pharmacy-service/default
+
+
+### ========================================================
+### BÀI TẬP 2: DYNAMIC REFRESH (CẬP NHẬT THUẾ VAT NÓNG)
+### ========================================================
+
+### 2.1. Tính tiền hóa đơn thuốc (Lần 1 - Thuế VAT 8%)
+POST http://localhost:8080/api/v1/bill
+Content-Type: application/json
+
+{
+  "amount": 100000
+}
+
+### 2.2. Sau khi sửa file trên Git thành 0.1 và commit, gọi API này để làm mới "nóng"
+POST http://localhost:8080/actuator/refresh
+Content-Type: application/json
+
+### 2.3. Tính tiền hóa đơn thuốc (Lần 2 - Đã tự động cập nhật lên 10% mà KHÔNG cần restart)
+POST http://localhost:8080/api/v1/bill
+Content-Type: application/json
+
+{
+  "amount": 100000
+}
+
+
+### ========================================================
+### BÀI TẬP 3: CIRCUIT BREAKER RESILIENCE4J (KIỂM TRA KHO THUỐC)
+### ========================================================
+
+### 3.1. Gọi kiểm tra tồn kho (Giả lập warehouse-service ở port 8082 đang sập)
+### Bấm gửi liên tiếp 3 - 5 lần để tích lũy tỷ lệ lỗi vượt ngưỡng 50%
+GET http://localhost:8080/api/v1/pharmacy/check-stock/paracetamol
+
+### 3.2. Kiểm tra trạng thái mạch Circuit Breaker (CLOSED, OPEN, hoặc HALF_OPEN)
+GET http://localhost:8080/actuator/health
+
+### 3.3. Xem chi tiết trạng thái Circuit Breaker qua Actuator
+GET http://localhost:8080/actuator/circuitbreakers

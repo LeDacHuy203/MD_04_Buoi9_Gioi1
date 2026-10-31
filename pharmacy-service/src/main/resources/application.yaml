@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: pharmacy-service
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  datasource:
+    url: jdbc:h2:mem:pharmacy_db;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+# Mở các endpoint của Actuator (refresh cho Bài 2, circuitbreakers & health cho Bài 3)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "refresh,health,info,circuitbreakers"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+
+# Dự phòng mặc định nếu chưa lấy từ Config Server
+pharmacy:
+  vat-rate: 0.08
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      warehouseCB:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 5
+        minimum-number-of-calls: 3
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 20s
+        permitted-number-of-calls-in-half-open-state: 2
+        automatic-transition-from-open-to-half-open-enabled: true
+        register-health-indicator: true

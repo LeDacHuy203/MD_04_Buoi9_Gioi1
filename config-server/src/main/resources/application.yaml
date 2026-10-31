@@ -1,0 +1,13 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:///C:/Users/ldh2k/Desktop/RIKKEI/BTVN%202/MD4/Buoi9/buoi9/config-git
+          default-label: master
+          clone-on-start: true
